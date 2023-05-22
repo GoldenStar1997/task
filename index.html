@@ -35,34 +35,41 @@
       display: flex;
       transition: opacity 0.5s ease-in-out;
     }
+
     .slide .photo {
       width: 30%;
       padding: 10px;
     }
+
     .slide .photo img {
       width: 100%;
     }
+
     .slide .info {
       width: 70%;
       padding: 10px;
     }
+
     .slide.active {
       opacity: 1;
     }
-    .indicators{
+
+    .indicators {
       position: absolute;
       height: 100%;
       width: 30px;
       right: 16px;
     }
-    .indicator{
+
+    .indicator {
       width: 10px;
       height: 10px;
       border-radius: 50%;
       border: solid 1px black;
       margin: 29px 10px;
     }
-    .indicator.active{
+
+    .indicator.active {
       background: black;
     }
   </style>
@@ -176,16 +183,27 @@
         startY = touch.pageY;
       });
 
-      $scrollStop.on('touchmove', function (e) {
+      var slideShown = false;
+
+      $scrollStop.on('touchmove', function handleTouchMove(e) {
+        if (slideShown) {
+          return;
+        }
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         var deltaY = touch.pageY - startY;
         if (deltaY > 0 && currentSlide > 0) {
           showSlide(currentSlide - 1);
+          slideShown = true;
           e.preventDefault();
         } else if (deltaY < 0 && currentSlide < numSlides - 1) {
           showSlide(currentSlide + 1);
+          slideShown = true;
           e.preventDefault();
         }
+      });
+
+      $scrollStop.on('touchend', function handleTouchEnd() {
+        slideShown = false;
       });
 
       // Handle mousewheel events on desktop
