@@ -155,18 +155,18 @@
 
   <script>
     $(document).ready(function () {
-      var $scrollStop = $('.scroll-stop');
-      var $slides = $scrollStop.find('.slide');
-      var $indicators = $scrollStop.find('.indicator');
-      var numSlides = $slides.length;
-      var currentSlide = 0;
-      var scrollStopped = false;
+      let $scrollStop = $('.scroll-stop');
+      let $slides = $scrollStop.find('.slide');
+      let $indicators = $scrollStop.find('.indicator');
+      let numSlides = $slides.length;
+      let currentSlide = 0;
+      let scrollStopped = false;
 
       // Stop scrolling when reaching the scroll-stop section
       $(window).on('scroll', function () {
-        var scrollTop = $(this).scrollTop();
-        var scrollStopTop = $scrollStop.offset().top;
-        var scrollStopBottom = scrollStopTop + $scrollStop.outerHeight();
+        let scrollTop = $(this).scrollTop();
+        let scrollStopTop = $scrollStop.offset().top;
+        let scrollStopBottom = scrollStopTop + $scrollStop.outerHeight();
         if (scrollTop >= scrollStopTop && scrollTop < scrollStopBottom) {
           if (!scrollStopped) {
             $(this).scrollTop(scrollStopTop);
@@ -179,44 +179,50 @@
 
       // Handle touch events on mobile
       let startY;
+      let slideShown = false;
+
       $scrollStop.on('touchstart', function (e) {
-        var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+        let touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
-      });
-
-      var slideShown = false;
-
-      $scrollStop.on('touchmove', function handleTouchMove(e) {
-        if (slideShown) {
-          return;
-        }
-        var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-        var deltaY = touch.pageY - startY;
-        if (deltaY > 0 && currentSlide > 0) {
+      }).on('touchmove', function (e) {
+        if (slideShown) return;
+        let touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+        let endY = touch.pageY - startY;
+        if (endY > 0 && currentSlide > 0) {
           showSlide(currentSlide - 1);
           slideShown = true;
-          e.preventDefault();
-        } else if (deltaY < 0 && currentSlide < numSlides - 1) {
+        } else if (endY < 0 && currentSlide < numSlides - 1) {
           showSlide(currentSlide + 1);
           slideShown = true;
-          e.preventDefault();
         }
-      });
-
-      $scrollStop.on('touchend', function handleTouchEnd() {
+      }).on('touchend', function () {
         slideShown = false;
       });
 
       // Handle mousewheel events on desktop
+      var debounce = function (func, delay) {
+        var timer;
+        return function () {
+          var context = this, args = arguments;
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            func.apply(context, args);
+          }, delay);
+        };
+      };
+
+      var showSlideDebounced = debounce(showSlide, 300);
+
       $scrollStop.on('mousewheel', function (e) {
         if (e.originalEvent.wheelDelta >= 0 && currentSlide > 0) {
-          showSlide(currentSlide - 1);
+          showSlideDebounced(currentSlide - 1);
           e.preventDefault();
         } else if (e.originalEvent.wheelDelta < 0 && currentSlide < numSlides - 1) {
-          showSlide(currentSlide + 1);
+          showSlideDebounced(currentSlide + 1);
           e.preventDefault();
         }
       });
+
 
       // Show a specific slide
       function showSlide(index) {
