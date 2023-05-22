@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="jquery-3.7.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .existing {
       display: flex;
@@ -160,22 +160,7 @@
       let $indicators = $scrollStop.find('.indicator');
       let numSlides = $slides.length;
       let currentSlide = 0;
-      let scrollStopped = false;
 
-      // Stop scrolling when reaching the scroll-stop section
-      $(window).on('scroll', function () {
-        let scrollTop = $(this).scrollTop();
-        let scrollStopTop = $scrollStop.offset().top;
-        let scrollStopBottom = scrollStopTop + $scrollStop.outerHeight();
-        if (scrollTop >= scrollStopTop && scrollTop < scrollStopBottom) {
-          if (!scrollStopped) {
-            $(this).scrollTop(scrollStopTop);
-            scrollStopped = true;
-          }
-        } else {
-          scrollStopped = false;
-        }
-      });
 
       // Handle touch events on mobile
       let startY;
@@ -222,7 +207,6 @@
           e.preventDefault();
         }
       });
-
 
       // Show a specific slide
       function showSlide(index) {
