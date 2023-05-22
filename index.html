@@ -191,7 +191,7 @@
       $slider.on('touchstart', function (e) {
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
-        e.preventDefault()
+        if (e.cancelable) event.preventDefault();
       }).on('touchmove', function (e) {
         if (slideShown) return;
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
@@ -200,12 +200,12 @@
           // If swiping up and not on the first slide, show the previous slide
           showSlide(curSlide - 1);
           slideShown = true;
-          e.preventDefault()
+          if (e.cancelable) event.preventDefault();
         } else if (endY < 0 && curSlide < numSlides - 1) {
           // If swiping down and not on the last slide, show the next slide
           showSlide(curSlide + 1);
           slideShown = true;
-          e.preventDefault()
+          if (e.cancelable) event.preventDefault();
         } else {
           // If swiping vertically but not enough to trigger a slide change, scroll the page
           window.scrollBy(0, -endY);
