@@ -178,6 +178,7 @@
       });
 
       // Handle touch events on mobile
+      let startY;
       $scrollStop.on('touchstart', function (e) {
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
