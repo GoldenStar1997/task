@@ -165,7 +165,7 @@
       };
 
       // Create a debounced version of the showSlide function
-      var showSlideDebounced = debounce(showSlide, 300);
+      var showSlideDebounced = debounce(showSlide, 100);
 
       // Handle touch events on desktop
       if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
@@ -191,7 +191,7 @@
       $slider.on('touchstart', function (e) {
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
-        if (e.cancelable) event.preventDefault();
+        if (e.cancelable) e.preventDefault();
       }).on('touchmove', function (e) {
         if (slideShown) return;
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
@@ -200,12 +200,12 @@
           // If swiping up and not on the first slide, show the previous slide
           showSlide(curSlide - 1);
           slideShown = true;
-          if (e.cancelable) event.preventDefault();
+          if (e.cancelable) e.preventDefault();
         } else if (endY < 0 && curSlide < numSlides - 1) {
           // If swiping down and not on the last slide, show the next slide
           showSlide(curSlide + 1);
           slideShown = true;
-          if (e.cancelable) event.preventDefault();
+          if (e.cancelable) e.preventDefault();
         } else {
           // If swiping vertically but not enough to trigger a slide change, scroll the page
           window.scrollBy(0, -endY);
