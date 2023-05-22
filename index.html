@@ -22,7 +22,6 @@
       height: 36vh;
       width: 100%;
       overflow: hidden;
-      padding: 1vh;
     }
 
     .slide {
@@ -33,26 +32,38 @@
       width: 100%;
       height: 36vh;
       opacity: 0;
-      transition: opacity 0.5s ease-in-out;
       display: flex;
+      transition: opacity 0.5s ease-in-out;
     }
-
     .slide .photo {
       width: 30%;
       padding: 10px;
     }
-
     .slide .photo img {
       width: 100%;
     }
-
     .slide .info {
       width: 70%;
       padding: 10px;
     }
-
     .slide.active {
       opacity: 1;
+    }
+    .indicators{
+      position: absolute;
+      height: 100%;
+      width: 30px;
+      right: 16px;
+    }
+    .indicator{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: solid 1px black;
+      margin: 29px 10px;
+    }
+    .indicator.active{
+      background: black;
     }
   </style>
 </head>
@@ -61,16 +72,26 @@
   <div class="existing">
     Exsting Section
   </div>
-
+  <div class="existing">
+    Exsting Section
   </div>
+
+  <!-- scroll-stop -->
   <div class="scroll-stop">
+    <!-- indicators -->
+    <div class="indicators">
+      <div class="indicator active"></div>
+      <div class="indicator"></div>
+      <div class="indicator"></div>
+      <div class="indicator"></div>
+    </div>
+
     <div class="slide active">
       <div class="photo">
         <img src="img/1.jpg" alt="">
       </div>
       <div class="info">
         <h2>Slide 1</h2>
-        <p>Content for slide 1 goes here.</p>
         <p>Content for slide 1 goes here.</p>
         <p>Content for slide 1 goes here.</p>
         <p>Content for slide 1 goes here.</p>
@@ -87,7 +108,6 @@
         <p>Content for slide 2 goes here.</p>
         <p>Content for slide 2 goes here.</p>
         <p>Content for slide 2 goes here.</p>
-        <p>Content for slide 2 goes here.</p>
       </div>
     </div>
     <div class="slide">
@@ -96,7 +116,6 @@
       </div>
       <div class="info">
         <h2>Slide 3</h2>
-        <p>Content for slide 3 goes here.</p>
         <p>Content for slide 3 goes here.</p>
         <p>Content for slide 3 goes here.</p>
         <p>Content for slide 3 goes here.</p>
@@ -113,18 +132,25 @@
         <p>Content for slide 4 goes here.</p>
         <p>Content for slide 4 goes here.</p>
         <p>Content for slide 4 goes here.</p>
-        <p>Content for slide 4 goes here.</p>
       </div>
     </div>
   </div>
+
   <div class="existing">
     Exsting Section
-  </div></div>
+  </div>
+  <div class="existing">
+    Exsting Section
+  </div>
+  <div class="existing">
+    Exsting Section
+  </div>
 
   <script>
     $(document).ready(function () {
       var $scrollStop = $('.scroll-stop');
       var $slides = $scrollStop.find('.slide');
+      var $indicators = $scrollStop.find('.indicator');
       var numSlides = $slides.length;
       var currentSlide = 0;
       var scrollStopped = false;
@@ -154,31 +180,31 @@
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         var deltaY = touch.pageY - startY;
         if (deltaY > 0 && currentSlide > 0) {
-          // Swipe down to show previous slide
           showSlide(currentSlide - 1);
+          e.preventDefault();
         } else if (deltaY < 0 && currentSlide < numSlides - 1) {
-          // Swipe up to show next slide
           showSlide(currentSlide + 1);
+          e.preventDefault();
         }
-        e.preventDefault();
       });
 
       // Handle mousewheel events on desktop
       $scrollStop.on('mousewheel', function (e) {
         if (e.originalEvent.wheelDelta >= 0 && currentSlide > 0) {
-          // Scroll up to show previous slide
           showSlide(currentSlide - 1);
+          e.preventDefault();
         } else if (e.originalEvent.wheelDelta < 0 && currentSlide < numSlides - 1) {
-          // Scroll down to show next slide
           showSlide(currentSlide + 1);
+          e.preventDefault();
         }
-        e.preventDefault();
       });
 
       // Show a specific slide
       function showSlide(index) {
         $slides.removeClass('active');
+        $indicators.removeClass('active');
         $slides.eq(index).addClass('active');
+        $indicators.eq(index).addClass('active');
         currentSlide = index;
       }
     });
