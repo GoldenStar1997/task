@@ -40,6 +40,8 @@
 
     .slide .photo img {
       width: 100%;
+      height: auto;
+      object-fit: cover;
     }
 
     .slide .info {
@@ -51,11 +53,15 @@
       opacity: 1;
     }
 
-    .indicators {
+    .pager {
       position: absolute;
       height: 100%;
       width: 30px;
       right: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
     .indicator {
@@ -63,7 +69,9 @@
       height: 10px;
       border-radius: 50%;
       border: solid 1px black;
-      margin: 29px 10px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
     }
 
     .indicator.active {
@@ -78,8 +86,8 @@
 
   <!-- scroll-stop -->
   <div id="scroll-stop">
-    <!-- indicators -->
-    <div class="indicators">
+    <!-- pager  -->
+    <div class="pager ">
       <div class="indicator active"></div>
       <div class="indicator"></div>
       <div class="indicator"></div>
@@ -142,17 +150,14 @@
 
   <script>
     $(document).ready(function () {
-      // Get the necessary elements from the DOM
-      var $slider = $('#scroll-stop');
-      var $slides = $slider.find('.slide');
-      var $indicators = $slider.find('.indicator');
-      var numSlides = $slides.length;
-      var curSlide = 0;
-      var lastScrollY = 0;
-      var stopPos = 500; // customize for needs
+      const $slider = $('#scroll-stop');
+      const $slides = $slider.find('.slide');
+      const $pager  = $slider.find('.indicator');
+      const numSlds = $slides.length;
+      let curSld = 0;
+      let stopPos = 500;
+      let slideShown = false;
 
-
-      // Define a debounce function to limit the frequency of function calls
       var debounce = function (func, delay) {
         var timer;
         return function () {
@@ -164,66 +169,63 @@
         };
       };
 
-      // Create a debounced version of the showSlide function
       var showSlideDebounced = debounce(showSlide, 100);
 
-      // Handle touch events on desktop
       if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        $(window).on('scroll', function (e) {
-          var scrollY = $(this).scrollTop();
-          var sliderY = $slider.offset().top;
-          var sliderBY = sliderY + $slider.outerHeight();
-
-          if (scrollY > stopPos && curSlide < 3) {
-            window.scrollTo(0, stopPos);
-            showSlideDebounced(curSlide + 1);
-          } else if (scrollY < stopPos && curSlide > 0) {
-            window.scrollTo(0, stopPos);
-            showSlideDebounced(curSlide - 1);
-          }
-        });
+        $(window).on('scroll', handleScroll);
       }
 
-      // Handle touch events on mobile
-      var startY;
-      var slideShown = false;
+      $slider
+        .on('touchstart', handleTouchStart)
+        .on('touchmove', handleTouchMove)
+        .on('touchend', handleTouchEnd);
 
-      $slider.on('touchstart', function (e) {
+      function handleScroll(e) {
+        var scrollY = $(this).scrollTop();
+        var sliderY = $slider.offset().top;
+
+        if (scrollY > stopPos && curSld < 3) {
+          window.scrollTo(0, stopPos);
+          showSlideDebounced(curSld + 1);
+        } else if (scrollY < stopPos && curSld > 0) {
+          window.scrollTo(0, stopPos);
+          showSlideDebounced(curSld - 1);
+        }
+      }
+
+      function handleTouchStart(e) {
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
         if (e.cancelable) e.preventDefault();
-      }).on('touchmove', function (e) {
+      }
+
+      function handleTouchMove(e) {
         if (slideShown) return;
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         var endY = touch.pageY - startY;
-        if (endY > 0 && curSlide > 0) {
-          // If swiping up and not on the first slide, show the previous slide
-          showSlide(curSlide - 1);
+        if (endY > 0 && curSld > 0) {
+          showSlide(curSld - 1);
           slideShown = true;
           if (e.cancelable) e.preventDefault();
-        } else if (endY < 0 && curSlide < numSlides - 1) {
-          // If swiping down and not on the last slide, show the next slide
-          showSlide(curSlide + 1);
+        } else if (endY < 0 && curSld < numSlds - 1) {
+          showSlide(curSld + 1);
           slideShown = true;
           if (e.cancelable) e.preventDefault();
         } else {
-          // If swiping vertically but not enough to trigger a slide change, scroll the page
           window.scrollBy(0, -endY);
         }
-      }).on('touchend', function () {
-        slideShown = false;
-      });
+      }
 
-      // Show a specific slide
+      function handleTouchEnd() {
+        slideShown = false;
+      }
+
       function showSlide(index) {
-        // Remove the "active" class from all slides and indicators
         $slides.removeClass('active');
-        $indicators.removeClass('active');
-        // Add the "active" class to the specified slide and indicator
+        $pager.removeClass('active');
         $slides.eq(index).addClass('active');
-        $indicators.eq(index).addClass('active');
-        // Update the current slide index
-        curSlide = index;
+        $pager.eq(index).addClass('active');
+        curSld = index;
       }
     });
   </script>
