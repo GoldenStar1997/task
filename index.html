@@ -6,7 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .existing {
       height: 50vh;
@@ -142,15 +141,13 @@
 
   <script>
     $(document).ready(function () {
-      var $scrollStop = $('#scroll-stop');
-      var $slides = $scrollStop.find('.slide');
-      var $indicators = $scrollStop.find('.indicator');
+      var $slider = $('#scroll-stop');
+      var $slides = $slider.find('.slide');
+      var $indicators = $slider.find('.indicator');
       var numSlides = $slides.length;
-      var currentSlide = 0;
-      var lastScrollTop = 0;
+      var curSlide = 0;
+      var lastScrollY = 0;
 
-
-      // Handle mousewheel events on desktop
       var debounce = function (func, delay) {
         var timer;
         return function () {
@@ -164,41 +161,42 @@
 
       var showSlideDebounced = debounce(showSlide, 300);
 
-      $(window).on('mousewheel', function (e) {
-        if ($scrollStop.is(':hover')) {
-          if (e.originalEvent.wheelDelta >= 0 && currentSlide > 0) {
-            showSlideDebounced(currentSlide - 1);
-            e.preventDefault();
-          } else if (e.originalEvent.wheelDelta < 0 && currentSlide < numSlides - 1) {
-            showSlideDebounced(currentSlide + 1);
-            e.preventDefault();
-          } else {
-            window.scrollBy(0, -endY);
-          }
+
+      // Brower 
+
+      $(window).on('scroll', function (e) {
+        var scrollY = $(this).scrollTop();
+        var sliderY = $slider.offset().top;
+        var sliderBY = sliderY + $slider.outerHeight();
+        var stopPos = sliderBY - $(window).height();
+
+        if (scrollY > stopPos && curSlide < numSlides - 1) {
+          window.scrollTo(0, stopPos);
+          showSlideDebounced(curSlide + 1);
+        } else if (scrollY < stopPos && curSlide > 0) {
+          window.scrollTo(0, stopPos);
+          showSlideDebounced(curSlide - 1);
         }
       });
 
-      // Handle mousewheel events on mobile
-      var startY;
-      var slideShown = false;
+      // Mobile
 
-      $scrollStop.on('touchstart', function (e) {
-        console.log(currentSlide)
+      $slider.on('touchstart', function (e) {
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
-        e.preventDefault()
+        e.preventDefault();
       }).on('touchmove', function (e) {
         if (slideShown) return;
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         var endY = touch.pageY - startY;
-        if (endY > 0 && currentSlide > 0) {
-          showSlide(currentSlide - 1);
+        if (endY > 0 && curSlide > 0) {
+          showSlide(curSlide - 1);
           slideShown = true;
-          e.preventDefault()
-        } else if (endY < 0 && currentSlide < numSlides - 1) {
-          showSlide(currentSlide + 1);
+          e.preventDefault();
+        } else if (endY < 0 && curSlide < numSlides - 1) {
+          showSlide(curSlide + 1);
           slideShown = true;
-          e.preventDefault()
+          e.preventDefault();
         } else {
           window.scrollBy(0, -endY);
         }
@@ -206,13 +204,12 @@
         slideShown = false;
       });
 
-      // Show a specific slide
       function showSlide(index) {
         $slides.removeClass('active');
         $indicators.removeClass('active');
         $slides.eq(index).addClass('active');
         $indicators.eq(index).addClass('active');
-        currentSlide = index;
+        curSlide = index;
       }
     });
   </script>
