@@ -17,7 +17,7 @@
       color: white;
     }
 
-    .scroll-stop {
+    #scroll-stop {
       position: relative;
       height: 36vh;
       width: 100%;
@@ -84,7 +84,7 @@
   </div>
 
   <!-- scroll-stop -->
-  <div class="scroll-stop">
+  <div id="scroll-stop">
     <!-- indicators -->
     <div class="indicators">
       <div class="indicator active"></div>
@@ -133,7 +133,7 @@
       <div class="photo">
         <img src="img/4.jpg" alt="">
       </div>
-      <div class="info">
+      <div class="info" a style="position: sticky;">
         <h2>Slide 4</h2>
         <p>Content for slide 4 goes here.</p>
         <p>Content for slide 4 goes here.</p>
@@ -155,36 +155,14 @@
 
   <script>
     $(document).ready(function () {
-      let $scrollStop = $('.scroll-stop');
-      let $slides = $scrollStop.find('.slide');
-      let $indicators = $scrollStop.find('.indicator');
-      let numSlides = $slides.length;
-      let currentSlide = 0;
+      var $scrollStop = $('#scroll-stop');
+      var $slides = $scrollStop.find('.slide');
+      var $indicators = $scrollStop.find('.indicator');
+      var numSlides = $slides.length;
+      var currentSlide = 0;
 
 
-      // Handle touch events on mobile
-      let startY;
-      let slideShown = false;
-
-      $scrollStop.on('touchstart', function (e) {
-        let touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-        startY = touch.pageY;
-      }).on('touchmove', function (e) {
-        if (slideShown) return;
-        let touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-        let endY = touch.pageY - startY;
-        if (endY > 0 && currentSlide > 0) {
-          showSlide(currentSlide - 1);
-          slideShown = true;
-        } else if (endY < 0 && currentSlide < numSlides - 1) {
-          showSlide(currentSlide + 1);
-          slideShown = true;
-        }
-      }).on('touchend', function () {
-        slideShown = false;
-      });
-
-      // Handle mousewheel events on desktop
+      // Handle mousewheel events on desktopc
       var debounce = function (func, delay) {
         var timer;
         return function () {
@@ -206,6 +184,31 @@
           showSlideDebounced(currentSlide + 1);
           e.preventDefault();
         }
+      });
+
+      // Handle mousewheel events on mobile
+      var startY;
+      var slideShown = false;
+
+      $scrollStop.on('touchstart', function (e) {
+        var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+        startY = touch.pageY;
+        e.preventDefault()
+      }).on('touchmove', function (e) {
+        if (slideShown) return;
+        var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+        var endY = touch.pageY - startY;
+        if (endY > 0 && currentSlide > 0) {
+          showSlide(currentSlide - 1);
+          slideShown = true;
+          e.preventDefault()
+        } else if (endY < 0 && currentSlide < numSlides - 1) {
+          showSlide(currentSlide + 1);
+          slideShown = true;
+          e.preventDefault()
+        }
+      }).on('touchend', function () {
+        slideShown = false;
       });
 
       // Show a specific slide
