@@ -150,13 +150,13 @@
 
   <script>
     $(document).ready(function () {
-      const $slider = $('#scroll-stop');
-      const $slides = $slider.find('.slide');
-      const $pager  = $slider.find('.indicator');
-      const numSlds = $slides.length;
-      let curSld = 0;
-      let stopPos = 500;
-      let slideShown = false;
+      var $slider = $('#scroll-stop');
+      var $slides = $slider.find('.slide');
+      var $pager  = $slider.find('.indicator');
+      var numSlds = $slides.length;
+      var curSld  = 0;
+      var stopPos =  $slider.offset().top - $(window).height()/3;
+      var isStopped = false;
 
       var debounce = function (func, delay) {
         var timer;
@@ -169,17 +169,12 @@
         };
       };
 
-      var showSlideDebounced = debounce(showSlide, 100);
+      var showSlideDebounced = debounce(showSlide, 300);
 
       if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         $(window).on('scroll', handleScroll);
       }
-
-      $slider
-        .on('touchstart', handleTouchStart)
-        .on('touchmove', handleTouchMove)
-        .on('touchend', handleTouchEnd);
-
+      
       function handleScroll(e) {
         var scrollY = $(this).scrollTop();
         var sliderY = $slider.offset().top;
@@ -192,32 +187,38 @@
           showSlideDebounced(curSld - 1);
         }
       }
+      
+      $slider
+        .on('touchstart', handvarouchStart)
+        .on('touchmove', handvarouchMove)
+        .on('touchend', handvarouchEnd);
 
-      function handleTouchStart(e) {
+
+      function handvarouchStart(e) {
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         startY = touch.pageY;
         if (e.cancelable) e.preventDefault();
       }
 
-      function handleTouchMove(e) {
-        if (slideShown) return;
+      function handvarouchMove(e) {
+        if (isStopped) return;
         var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
         var endY = touch.pageY - startY;
         if (endY > 0 && curSld > 0) {
           showSlide(curSld - 1);
-          slideShown = true;
+          isStopped = true;
           if (e.cancelable) e.preventDefault();
         } else if (endY < 0 && curSld < numSlds - 1) {
           showSlide(curSld + 1);
-          slideShown = true;
+          isStopped = true;
           if (e.cancelable) e.preventDefault();
         } else {
           window.scrollBy(0, -endY);
         }
       }
 
-      function handleTouchEnd() {
-        slideShown = false;
+      function handvarouchEnd() {
+        isStopped = false;
       }
 
       function showSlide(index) {
