@@ -136,28 +136,21 @@
           }
         });
 
-        $(slider).on("touchstart", function (e) {
+        $(window).on("touchstart", function (e) {
           touchStartY = e.originalEvent.touches[0].clientY;
-          touchStartX = e.originalEvent.touches[0].clientX;
+          e.preventDefault()
         });
 
-        $(slider).on("touchmove", function (e) {
+        $(window).on("touchmove", function (e) {
           if (!isExecuting && isStopped) {
             isExecuting = true;
 
             let touchEndY = e.originalEvent.touches[0].clientY;
-            let touchEndX = e.originalEvent.touches[0].clientX;
+            let p = touchEndY > touchStartY ? -1 : 1;
 
-            let pY = touchEndY > touchStartY ? -1 : 1;
-            let pX = touchEndX > touchStartX ? -1 : 1;
-
-            if (pY > 0 && cur < len - 1) {
+            if (p > 0 && cur < len - 1) {
               cur++;
-            } else if (pY < 0 && cur > 0) {
-              cur--;
-            } else if (pX > 0 && cur < len - 1) {
-              cur++;
-            } else if (pX < 0 && cur > 0) {
+            } else if (p < 0 && cur > 0) {
               cur--;
             } else {
               isStopped = false;
