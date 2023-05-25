@@ -80,7 +80,7 @@
     <script>
       $(document).ready(function () {
         var slider = $("#slider");
-        var pager = $(".pager").find('.indicator')
+        var pager = $(".pager").find(".indicator");
         var slides = slider.find(".slide");
         var len = slides.length;
         var cur = 0;
@@ -117,6 +117,34 @@
               e.originalEvent.wheelDelta > 0 || e.originalEvent.detail < 0
                 ? -1
                 : 1;
+            if (p > 0 && cur < len - 1) {
+              cur++;
+            } else if (p < 0 && cur > 0) {
+              cur--;
+            } else {
+              isStopped = false;
+              $("html, body").css("overflow", "auto");
+            }
+            slides.removeClass("active");
+            slides.eq(cur).addClass("active");
+            pager.removeClass("active");
+            pager.eq(cur).addClass("active");
+
+            setTimeout(() => {
+              isExecuting = false;
+            }, 300);
+          }
+        });
+
+        $(window).on("touchstart", function (e) {
+          touchStartY = e.originalEvent.touches[0].clientY;
+        });
+
+        $(window).on("touchmove", function (e) {
+          if (!isExecuting && isStopped) {
+            isExecuting = true;
+            let touchEndY = e.originalEvent.touches[0].clientY;
+            let p = touchEndY > touchStartY ? -1 : 1;
             if (p > 0 && cur < len - 1) {
               cur++;
             } else if (p < 0 && cur > 0) {
